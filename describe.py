@@ -1,18 +1,31 @@
 #!/usr/bin/env python3
 
 import yaml
+import os
+import datetime
 
 
 def parse(lines):
     # strip non-yaml compatbiel
     lines = lines[22:]
+    lines = [l.lower() for l in lines]
     return yaml.load('\n'.join(lines))
 
     
 if __name__ == '__main__':
-    name = 'report.mod.txt'
+    name = 'report.txt'
     with open(name) as f:
-        lines = [l.strip() for l in f.readlines()]
+        lines = f.readlines()
         results = parse(lines)
-        print(results)
-        print(yaml.dump(results, default_flow_style=False))
+
+        timestamp = datetime.datetime.now().isoformat()
+
+        record = {
+            'timestamp': timestamp,
+            'path': os.getcwd(),
+            'filesystem': '',
+            'compression': 'none'
+        }
+        record['results'] = results
+
+        print(yaml.dump([record], default_flow_style=False))
